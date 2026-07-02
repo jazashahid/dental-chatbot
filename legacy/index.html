@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>idk what to do — decision helper</title>
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;600;700;900&family=Instrument+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --paper: #fdfaf3;
+    --ink: #1a1814;
+    --muted: #7a7264;
+    --border: #d4cdb8;
+    --yellow: #f5e642;
+    --pink: #ff7eb3;
+    --blue: #4a9eff;
+    --green: #52d68a;
+    --red: #ff5252;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 20% 80%, #f5e64215 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, #ff7eb315 0%, transparent 50%),
+      repeating-linear-gradient(0deg, transparent, transparent 27px, #d4cdb830 28px),
+      repeating-linear-gradient(90deg, transparent, transparent 27px, #d4cdb815 28px);
+    min-height: 100vh;
+    font-family: 'Instrument Sans', sans-serif;
+    padding: 32px 20px 100px;
+    color: var(--ink);
+  }
+
+  .wrap { max-width: 620px; margin: 0 auto; }
+
+  header {
+    margin-bottom: 20px;
+    position: relative;
+    animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .tape {
+    display: inline-block;
+    background: #f5e64280;
+    height: 18px; width: 60px;
+    border-radius: 2px;
+    position: absolute;
+    top: -8px; left: 50%;
+    transform: translateX(-50%) rotate(-1deg);
+    z-index: 2;
+  }
+
+  .header-card {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 16px;
+    padding: 28px 32px 24px;
+    box-shadow: 4px 4px 0 var(--ink);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header-card::before {
+    content: '✏️ 📚 ☕ 😭 🍕 💸';
+    position: absolute;
+    top: 8px; right: 12px;
+    font-size: 14px; letter-spacing: 2px; opacity: 0.4;
+  }
+
+  .tag {
+    display: inline-block;
+    background: var(--yellow);
+    color: var(--ink);
+    font-family: 'Gabarito', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px;
+    border: 1.5px solid var(--ink); margin-bottom: 10px;
+  }
+
+  h1 {
+    font-family: 'Gabarito', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2rem, 6vw, 3rem);
+    line-height: 1; letter-spacing: -1px;
+  }
+
+  h1 span {
+    background: var(--yellow); padding: 0 6px;
+    border-radius: 4px; display: inline-block; transform: rotate(-1deg);
+  }
+
+  .subtitle { margin-top: 10px; color: var(--muted); font-size: 14px; font-style: italic; }
+
+  /* Palestine banner */
+  .pal-banner {
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    box-shadow: 3px 3px 0 var(--ink);
+    animation: slideIn 0.5s 0.02s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .flag-strip { display: flex; height: 7px; }
+  .flag-strip div:nth-child(1) { flex: 1; background: #000; }
+  .flag-strip div:nth-child(2) { flex: 1; background: #fff; border-top: 1px solid #d4cdb8; border-bottom: 1px solid #d4cdb8; }
+  .flag-strip div:nth-child(3) { flex: 1; background: #007a3d; }
+  .flag-strip div:nth-child(4) { flex: 1; background: #ce1126; }
+
+  .pal-body {
+    background: var(--paper);
+    padding: 11px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .pal-emoji { font-size: 22px; flex-shrink: 0; }
+
+  .pal-text {
+    font-family: 'Gabarito', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: var(--ink); flex: 1; line-height: 1.4;
+  }
+
+  .pal-text span {
+    display: block;
+    font-family: 'Instrument Sans', sans-serif;
+    font-weight: 400; font-size: 11.5px;
+    color: var(--muted); margin-top: 2px; font-style: italic;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    padding: 22px 24px; margin-bottom: 14px;
+    box-shadow: 3px 3px 0 var(--ink);
+    animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .card-label {
+    font-family: 'Gabarito', sans-serif;
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.5px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block; border: 1.5px solid var(--ink); flex-shrink: 0;
+  }
+
+  input[type="text"] {
+    width: 100%; background: transparent;
+    border: none; border-bottom: 2px solid var(--border);
+    color: var(--ink);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 15px; padding: 8px 4px;
+    outline: none; transition: border-color 0.15s; border-radius: 0;
+  }
+  input:focus { border-bottom-color: var(--ink); }
+  input::placeholder { color: #b0a898; font-style: italic; }
+
+  .options-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+
+  .option-row { display: flex; align-items: center; gap: 8px; animation: slideIn 0.3s ease both; }
+
+  .option-num {
+    font-family: 'Gabarito', sans-serif; font-weight: 700; font-size: 12px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--ink); color: var(--paper);
+    display: grid; place-items: center; flex-shrink: 0;
+  }
+
+  .option-row input { flex: 1; }
+
+  .rm-btn {
+    background: none; border: 1.5px solid var(--border);
+    color: var(--muted); border-radius: 6px;
+    width: 28px; height: 28px; cursor: pointer;
+    font-size: 14px; display: grid; place-items: center;
+    transition: all 0.15s; flex-shrink: 0;
+  }
+  .rm-btn:hover { border-color: var(--red); color: var(--red); background: #ff525210; }
+
+  .add-option-btn {
+    background: none; border: 2px dashed var(--border);
+    border-radius: 8px; color: var(--muted);
+    font-family: 'Gabarito', sans-serif; font-size: 13px; font-weight: 600;
+    padding: 8px; cursor: pointer; width: 100%; transition: all 0.15s;
+  }
+  .add-option-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+  .presets-label {
+    font-family: 'Gabarito', sans-serif; font-size: 11px;
+    font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 8px; margin-top: 16px;
+  }
+
+  .presets { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .preset-chip {
+    background: var(--paper); border: 1.5px solid var(--border);
+    border-radius: 20px; padding: 5px 12px;
+    font-size: 12px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .preset-chip:hover { border-color: var(--ink); background: var(--yellow); transform: translateY(-1px); }
+
+  .mode-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .mode-btn {
+    flex: 1; padding: 10px 8px;
+    background: var(--bg); border: 2px solid var(--border);
+    border-radius: 10px; color: var(--muted); cursor: pointer;
+    font-family: 'Gabarito', sans-serif; font-size: 13px; font-weight: 600;
+    transition: all 0.15s; text-align: center;
+  }
+  .mode-btn.active { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+
+  .cta-btn {
+    width: 100%; padding: 18px;
+    background: var(--ink); border: 2px solid var(--ink);
+    border-radius: 14px; color: var(--paper);
+    font-family: 'Gabarito', sans-serif; font-size: 18px; font-weight: 900;
+    cursor: pointer; transition: all 0.15s;
+    box-shadow: 4px 4px 0 #b0a898; letter-spacing: 0.5px;
+    animation: slideIn 0.5s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .cta-btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #b0a898; }
+  .cta-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #b0a898; }
+  .cta-btn:disabled { opacity: 0.5; transform: none; cursor: not-allowed; box-shadow: 4px 4px 0 #b0a898; }
+
+  .loading {
+    background: var(--paper); border: 2px solid var(--ink);
+    border-radius: 14px; padding: 40px 24px; text-align: center;
+    box-shadow: 3px 3px 0 var(--ink); margin-top: 16px;
+    animation: slideIn 0.3s ease both;
+  }
+  .spin-emoji { font-size: 36px; display: inline-block; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
+  .loading-text { font-family: 'Gabarito', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+  .loading-sub { color: var(--muted); font-size: 13px; font-style: italic; }
+
+  #result { margin-top: 16px; animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+  .winner-card {
+    background: var(--yellow); border: 2px solid var(--ink);
+    border-radius: 14px; padding: 26px 24px;
+    box-shadow: 4px 4px 0 var(--ink); margin-bottom: 12px;
+    position: relative; overflow: hidden;
+  }
+  .winner-card::after { content: '🎉'; position: absolute; right: 20px; top: 16px; font-size: 28px; animation: bounce 1s ease infinite; }
+
+  .winner-eyebrow {
+    font-family: 'Gabarito', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; opacity: 0.7;
+  }
+
+  .winner-name {
+    font-family: 'Gabarito', sans-serif;
+    font-size: clamp(1.6rem, 5vw, 2.2rem); font-weight: 900;
+    line-height: 1.1; letter-spacing: -0.5px; margin-bottom: 14px; padding-right: 44px;
+  }
+
+  .conf-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+
+  .conf-bar {
+    flex: 1; height: 8px; background: rgba(0,0,0,0.15);
+    border-radius: 10px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .conf-fill {
+    height: 100%; background: var(--ink); border-radius: 10px;
+    transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .conf-pct { font-family: 'Gabarito', sans-serif; font-weight: 900; font-size: 16px; white-space: nowrap; }
+
+  .reasoning {
+    background: rgba(255,255,255,0.5); border-radius: 10px;
+    border: 1.5px solid rgba(0,0,0,0.12); padding: 14px 16px;
+    font-size: 14px; line-height: 1.65; font-style: italic;
+  }
+
+  .breakdown-label {
+    font-family: 'Gabarito', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 10px; padding-left: 2px;
+  }
+
+  .breakdown-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .opt-card {
+    background: var(--paper); border: 2px solid var(--border);
+    border-radius: 12px; overflow: hidden; box-shadow: 2px 2px 0 var(--border);
+  }
+  .opt-card.winner-opt { border-color: var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+
+  .opt-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; cursor: pointer; gap: 10px;
+  }
+
+  .opt-head-left {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Gabarito', sans-serif; font-weight: 700; font-size: 14px;
+  }
+
+  .w-badge {
+    font-size: 10px; font-family: 'Gabarito', sans-serif; font-weight: 700;
+    background: var(--ink); color: var(--paper);
+    padding: 2px 8px; border-radius: 4px; text-transform: uppercase;
+  }
+
+  .chevron { color: var(--muted); font-size: 11px; transition: transform 0.2s; flex-shrink: 0; }
+
+  .opt-body {
+    display: none; padding: 14px 16px;
+    border-top: 1.5px solid var(--border); background: #faf8f2;
+  }
+  .opt-body.open { display: block; }
+
+  .pc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .pc-col h4 {
+    font-family: 'Gabarito', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .pros-c h4 { color: #2a8a5a; }
+  .cons-c h4 { color: #cc3a3a; }
+
+  .pc-col ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+
+  .pc-col li {
+    font-size: 12.5px; color: var(--muted); line-height: 1.4;
+    padding-left: 16px; position: relative;
+  }
+  .pros-c li::before { content: '✓'; position: absolute; left: 0; color: #2a8a5a; font-weight: 700; font-size: 11px; }
+  .cons-c li::before { content: '✗'; position: absolute; left: 0; color: #cc3a3a; font-weight: 700; font-size: 11px; }
+
+  .reroll-btn {
+    width: 100%; margin-top: 12px; padding: 13px;
+    background: transparent; border: 2px dashed var(--border);
+    border-radius: 12px; color: var(--muted);
+    font-family: 'Gabarito', sans-serif; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px;
+  }
+  .reroll-btn:hover { border-color: var(--ink); color: var(--ink); background: var(--bg); }
+
+  .error-card {
+    background: #fff0f0; border: 2px solid var(--red);
+    border-radius: 12px; padding: 18px; text-align: center;
+    color: var(--red); font-family: 'Gabarito', sans-serif;
+    font-weight: 600; font-size: 14px; margin-top: 16px;
+    box-shadow: 3px 3px 0 #ffbaba;
+  }
+
+  @keyframes slideIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+  @media (max-width: 480px) {
+    .pc-grid { grid-template-columns: 1fr; }
+    .header-card { padding: 22px 18px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="tape"></div>
+    <div class="header-card">
+      <div class="tag">for the chronically indecisive</div>
+      <h1>idk what<br>to <span>do</span></h1>
+      <p class="subtitle">a decision helper for when your brain stopped working at 2am</p>
+    </div>
+  </header>
+
+  <div class="pal-banner">
+    <div class="flag-strip"><div></div><div></div><div></div><div></div></div>
+    <div class="pal-body">
+      <span class="pal-emoji">🍉</span>
+      <div class="pal-text">
+        Free Palestine 🇵🇸
+        <span>from the river to the sea — stay informed, stay loud, keep showing up</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="animation-delay:0.05s">
+    <div class="card-label"><span class="dot" style="background:var(--pink)"></span> what's the situation?</div>
+    <input type="text" id="question" placeholder="e.g. should i study or go to that party on a tuesday" autocomplete="off">
+    <div class="presets-label">common college struggles 👇</div>
+    <div class="presets">
+      <span class="preset-chip" onclick="loadPreset('study')">📚 study dilemma</span>
+      <span class="preset-chip" onclick="loadPreset('food')">🍕 what to eat</span>
+      <span class="preset-chip" onclick="loadPreset('sleep')">😴 sleep vs grind</span>
+      <span class="preset-chip" onclick="loadPreset('social')">🎉 social life</span>
+      <span class="preset-chip" onclick="loadPreset('money')">💸 broke decisions</span>
+    </div>
+  </div>
+
+  <div class="card" style="animation-delay:0.1s">
+    <div class="card-label"><span class="dot" style="background:var(--blue)"></span> your options</div>
+    <div class="options-list" id="optList"></div>
+    <button class="add-option-btn" id="addBtn" onclick="addOption()">+ add another option (up to 5)</button>
+  </div>
+
+  <div class="card" style="animation-delay:0.15s">
+    <div class="card-label"><span class="dot" style="background:var(--green)"></span> vibe check</div>
+    <div class="mode-row">
+      <button class="mode-btn active" data-mode="ai" onclick="setMode('ai')">🤖 AI decides for me</button>
+      <button class="mode-btn" data-mode="random" onclick="setMode('random')">🎲 just pick randomly</button>
+      <button class="mode-btn" data-mode="chaos" onclick="setMode('chaos')">🌀 chaos mode</button>
+    </div>
+  </div>
+
+  <button class="cta-btn" id="decideBtn" onclick="decide()">make this decision for me please 🙏</button>
+
+  <div id="resultArea"></div>
+</div>
+
+<script>
+const PRESETS = {
+  study: { q: "should i actually study for this exam or wing it", opts: ["pull an all-nighter", "study for 2 hours then sleep", "watch youtube and call it research", "ask chatgpt to explain everything"] },
+  food: { q: "what should i eat rn (it's 11pm and i have $8)", opts: ["ramen in the dorm", "door dash and go broke", "dining hall slop", "just don't eat (broke behavior)"] },
+  sleep: { q: "should i sleep or keep grinding", opts: ["sleep like a normal person", "3 more hours then sleep", "energy drink and suffer", "nap for 20 min (become 4 hour nap)"] },
+  social: { q: "do i go out tonight or stay in", opts: ["go to the party", "stay in and watch netflix", "pregame then fake sick", "text 'maybe' and ghost everyone"] },
+  money: { q: "how do i spend my last $30 until friday", opts: ["groceries like an adult", "split it on eating out", "save it all (lol)", "spend it all on one good meal"] }
+};
+
+let mode = 'ai';
+let lastCall = null;
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+}
+
+function loadPreset(key) {
+  const p = PRESETS[key];
+  document.getElementById('question').value = p.q;
+  document.getElementById('optList').innerHTML = '';
+  p.opts.forEach(o => addOption(o));
+}
+
+function addOption(val = '') {
+  const list = document.getElementById('optList');
+  if (list.children.length >= 5) return;
+  const n = list.children.length + 1;
+  const row = document.createElement('div');
+  row.className = 'option-row';
+  row.innerHTML = `
+    <span class="option-num">${n}</span>
+    <input type="text" placeholder="${getPlaceholder(n)}" value="${val}">
+    ${n > 2 ? `<button class="rm-btn" onclick="removeOption(this)">✕</button>` : ''}
+  `;
+  list.appendChild(row);
+  if (list.children.length >= 5) document.getElementById('addBtn').style.display = 'none';
+}
+
+function removeOption(btn) {
+  btn.parentElement.remove();
+  renumber();
+  document.getElementById('addBtn').style.display = '';
+}
+
+function renumber() {
+  document.querySelectorAll('#optList .option-row').forEach((row, i) => {
+    row.querySelector('.option-num').textContent = i + 1;
+  });
+}
+
+function getPlaceholder(n) {
+  const ph = ["the responsible choice", "the fun choice (let's be real)", "the chaotic option", "what your roommate would do", "the 3am decision"];
+  return ph[n - 1] || `option ${n}`;
+}
+
+function getOptions() {
+  return [...document.querySelectorAll('#optList .option-row input')].map(i => i.value.trim()).filter(Boolean);
+}
+
+async function decide() {
+  const q = document.getElementById('question').value.trim();
+  const opts = getOptions();
+  if (!q) { document.getElementById('question').focus(); return; }
+  if (opts.length < 2) { alert('add at least 2 options bestie 💀'); return; }
+  lastCall = { q, opts };
+  document.getElementById('decideBtn').disabled = true;
+  document.getElementById('resultArea').innerHTML = '';
+  if (mode === 'random' || mode === 'chaos') await localDecide(q, opts);
+  else await aiDecide(q, opts);
+  document.getElementById('decideBtn').disabled = false;
+}
+
+function showLoading() {
+  const msgs = [
+    ["🧠", "asking the academic oracle...", "checking your gpa karma first"],
+    ["☕", "consulting the coffee grounds...", "brewing a second opinion just in case"],
+    ["📖", "pretending to read your syllabus...", "so you don't have to, ever"],
+    ["🎓", "channeling senior wisdom...", "spoiler: they also had no idea"],
+    ["💤", "waking up from a nap to answer...", "this better be important"],
+  ];
+  const [e, t, s] = msgs[Math.floor(Math.random() * msgs.length)];
+  document.getElementById('resultArea').innerHTML = `
+    <div class="loading">
+      <div class="spin-emoji">${e}</div>
+      <div class="loading-text">${t}</div>
+      <div class="loading-sub">${s}</div>
+    </div>`;
+}
+
+async function aiDecide(q, opts) {
+  showLoading();
+  const prompt = `You are a funny, brutally honest friend giving advice to a stressed college student. Be relatable, use casual language, reference real college struggles.
+Question: "${q}"
+Options: ${opts.map((o, i) => `${i+1}. ${o}`).join('\n')}
+
+Respond ONLY with valid JSON (no markdown, no extra text):
+{
+  "winner": "exact text of best option",
+  "confidence": <integer 51-97>,
+  "reasoning": "2-3 sentences. Sound like a college senior. Reference real college things: GPA, sleep debt, ramen, dining hall, exams, procrastination, being broke, 8am classes, group projects, etc. Be genuinely helpful but funny.",
+  "options": [
+    {
+      "name": "exact option text",
+      "pros": ["funny & real pro (max 10 words)", "pro 2", "pro 3"],
+      "cons": ["funny & real con (max 10 words)", "con 2", "con 3"]
+    }
+  ]
+}
+
+Make pros/cons college-student specific and funny. Examples: "technically counts as self-care", "your 8am will not forgive you", "future you is already disappointed", "wallet said absolutely not", "dining hall closes in 20 min", "your groupchat will never let this go", "mom finds out = game over".`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1200,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content.filter(c => c.type === 'text').map(c => c.text).join('').replace(/```json|```/g, '').trim();
+    renderResult(JSON.parse(text), opts);
+  } catch(e) {
+    document.getElementById('resultArea').innerHTML = `<div class="error-card">💀 the oracle crashed (like your laptop before finals)<br><br>try random or chaos mode instead</div>`;
+  }
+}
+
+async function localDecide(q, opts) {
+  showLoading();
+  await new Promise(r => setTimeout(r, 700 + Math.random() * 500));
+  const winner = opts[Math.floor(Math.random() * opts.length)];
+  const reasons = mode === 'chaos'
+    ? ["I asked my dorm's broken vending machine and it pointed here.", "Mercury is in retrograde and this option has the best energy.", "My algorithm ran out of RAM. This is what was left.", "The wifi died mid-calculation and this was the last option loaded.", "I consulted a Magic 8-Ball. It said 'outlook good'. Close enough."]
+    : ["Randomly selected. Any consequences are between you and the universe.", "The dice have spoken. This is not my fault.", "Chosen by the finest RNG this side of the quad.", "Truly random. Your GPA may vary.", "No thoughts, head empty, just vibes. Here you go."];
+  const pros = ["at least it's a decision", "future you can deal with it", "bold move honestly", "zero planning required", "your groupchat will love this", "statistically not the worst"];
+  const cons = ["your 8am is watching", "wallet said absolutely not", "past you tried this once", "mom would not approve", "consequences incoming", "dining hall already closed"];
+  const sh = a => [...a].sort(() => Math.random() - 0.5);
+  renderResult({
+    winner,
+    confidence: 33 + Math.floor(Math.random() * 35),
+    reasoning: reasons[Math.floor(Math.random() * reasons.length)],
+    options: opts.map(o => ({ name: o, pros: sh(pros).slice(0,3), cons: sh(cons).slice(0,3) }))
+  }, opts);
+}
+
+function renderResult(result, opts) {
+  const cards = (result.options || opts.map(o => ({name:o,pros:[],cons:[]}))).map(opt => {
+    const isW = opt.name === result.winner;
+    return `
+    <div class="opt-card ${isW ? 'winner-opt' : ''}">
+      <div class="opt-head" onclick="toggleBody(this)">
+        <div class="opt-head-left">
+          ${isW ? '⭐ ' : ''}<span>${opt.name}</span>
+          ${isW ? '<span class="w-badge">the pick</span>' : ''}
+        </div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="opt-body ${isW ? 'open' : ''}">
+        <div class="pc-grid">
+          <div class="pc-col pros-c"><h4>✅ pros</h4><ul>${(opt.pros||[]).map(p=>`<li>${p}</li>`).join('')}</ul></div>
+          <div class="pc-col cons-c"><h4>❌ cons</h4><ul>${(opt.cons||[]).map(c=>`<li>${c}</li>`).join('')}</ul></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('resultArea').innerHTML = `
+    <div id="result">
+      <div class="winner-card">
+        <div class="winner-eyebrow">the oracle has decided</div>
+        <div class="winner-name">${result.winner}</div>
+        <div class="conf-row">
+          <div class="conf-bar"><div class="conf-fill" style="width:0%" id="cBar"></div></div>
+          <span class="conf-pct">${result.confidence}% sure</span>
+        </div>
+        <div class="reasoning">"${result.reasoning}"</div>
+      </div>
+      <div class="breakdown-label">all options — tap to see pros & cons</div>
+      <div class="breakdown-list">${cards}</div>
+      <button class="reroll-btn" onclick="reroll()">↺ ask again (i didn't like that answer)</button>
+    </div>`;
+
+  setTimeout(() => { const b = document.getElementById('cBar'); if(b) b.style.width = result.confidence + '%'; }, 80);
+}
+
+function toggleBody(el) {
+  const body = el.nextElementSibling;
+  const chev = el.querySelector('.chevron');
+  body.classList.toggle('open');
+  chev.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : '';
+}
+
+async function reroll() {
+  if (!lastCall) return;
+  document.getElementById('decideBtn').disabled = true;
+  if (mode === 'ai') await aiDecide(lastCall.q, lastCall.opts);
+  else await localDecide(lastCall.q, lastCall.opts);
+  document.getElementById('decideBtn').disabled = false;
+}
+
+addOption(); addOption();
+</script>
+</body>
+</html>
